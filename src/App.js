@@ -23,6 +23,12 @@ function App() {
   }, []);
 
   // Update todo in firebase
+  const toggleComplete = async (todo) => {
+    await updateDoc(doc(db, 'todos', todo.id), {
+      completed: !todo.completed,
+    });
+  };
+
   // Delete todo
 
   return (
@@ -44,7 +50,7 @@ function App() {
 
         <ul>
           {todos.map((todo, index) => (
-            <Todo key={index} todo={todo} />
+            <Todo key={index} todo={todo}  toggleComplete={toggleComplete} />
           ))}
         </ul>
         <p className="text-center p-2 underline cursor-default">
