@@ -51,6 +51,9 @@ function App() {
   };
 
   // Delete todo
+  const deleteTodo = async (id) => {
+    await deleteDoc(doc(db, "todos", id));
+  };
 
   return (
     <div className="h-screen w-screen p-4 bg-gradient-to-r from-[#2F80ED] to-[#1CB5E0]">
@@ -73,7 +76,12 @@ function App() {
 
         <ul>
           {todos.map((todo, index) => (
-            <Todo key={index} todo={todo} toggleComplete={toggleComplete} />
+            <Todo
+              key={index}
+              todo={todo}
+              toggleComplete={toggleComplete}
+              deleteTodo={deleteTodo}
+            />
           ))}
         </ul>
         {todos.length < 1 ? null : (
