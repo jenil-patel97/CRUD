@@ -2,13 +2,34 @@ import React, { useState, useEffect } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import Todo from "./Todo";
 import { db } from "./firebase";
-import {query,collection,onSnapshot,updateDoc,doc,addDoc,deleteDoc,
-} from 'firebase/firestore';
+import {
+  query,
+  collection,
+  onSnapshot,
+  updateDoc,
+  doc,
+  addDoc,
+  deleteDoc,
+} from "firebase/firestore";
 
 function App() {
   const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState("");
 
   // Create todo
+  const createTodo = async (e) => {
+    e.preventDefault(e);
+    if (input === "") {
+      alert("Please enter a valid todo");
+      return;
+    }
+    await addDoc(collection(db, "todos"), {
+      text: input,
+      completed: false,
+    });
+    setInput("");
+  };
+
   // Read todo from firebase
   useEffect(() => {
     const q = query(collection(db, "todos"));
@@ -24,7 +45,7 @@ function App() {
 
   // Update todo in firebase
   const toggleComplete = async (todo) => {
-    await updateDoc(doc(db, 'todos', todo.id), {
+    await updateDoc(doc(db, "todos", todo.id), {
       completed: !todo.completed,
     });
   };
@@ -37,8 +58,10 @@ function App() {
         <h3 className="text-2xl font-bold text-center text-gray-800 p-2 cursor-default">
           Todo App
         </h3>
-        <form className="flex justify-between">
+        <form onSubmit={createTodo} className="flex justify-between">
           <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
             className="border p-2 w-full text-lg"
             type="text"
             placeholder="Add Todo"
@@ -50,12 +73,14 @@ function App() {
 
         <ul>
           {todos.map((todo, index) => (
-            <Todo key={index} todo={todo}  toggleComplete={toggleComplete} />
+            <Todo key={index} todo={todo} toggleComplete={toggleComplete} />
           ))}
         </ul>
-        <p className="text-center p-2 underline cursor-default">
-          You Have 2 Todos
-        </p>
+        {todos.length < 1 ? null : (
+          <p className="text-center p-2 underline cursor-default">
+            {`You Have ${todos.length} Todos`}
+          </p>
+        )}
       </div>
     </div>
   );
